@@ -122,6 +122,10 @@ if ($errors == 0) {
         // if there is no errors then the database will disconnect.
         echo "<p>Closing database \"$DBName\" connection.</p>\n";
         mysqli_close($DBConnect);
+        echo "<form action='AvailableOpportunities.php' method='post'>\n";
+        echo "<input type ='hidden' name='internID' value='$internID'>\n";
+        echo "<input type='submit' name='submit' value='View Available Opportunities'>\n";
+        echo "</form>\n";
     }
     // this indicates to correct their errors
     if ($errors > 0) {
