@@ -63,7 +63,6 @@ if (!empty($password) && !empty($password2)) {
         $password2 = "";
     }
 }
-    // if there are errors then it will request you to go back and fix the errors
  // if there are no errors then it will connect to the database
 if ($errors == 0) {
     $DBConnect = mysqli_connect($hostname, $username, $passwd);
@@ -82,6 +81,20 @@ if ($errors == 0) {
     }
     // if there are no errors
     $TableName = "interns";
+    // counts how many rows are in the email field in the table
+    if ($errors == 0) {
+        $SQLstring = "SELECT count(*) FROM $TableName" . 
+            " WHERE email='$email'";
+        $queryResult = mysqli_query($DBConnect, $SQLstring);
+        // if the user inputs an email that is already in the server then it will provide an error indicating so
+        if ($queryResult) {
+            $row = mysqli_fetch_row($queryResult);
+            if ($row[0] > 0){
+                ++$errors;
+                echo "<p>The e-mail address entered (" . htmlentities($email) . ") is already registered.</p>\n";
+            }
+        }
+    }
     if ($errors == 0) {
         $first = stripslashes($_POST['first']);
         $last = stripslashes($_POST['last']);
@@ -95,13 +108,22 @@ if ($errors == 0) {
         else {
             $internID = mysqli_insert_id($DBConnect);
         }
-            // if there is no errors then the database will disconnect.
-echo "<p>Closing database \"$DBName\" connection.</p>\n";
-        mysqli_close($DBConnect);
     }
 
     }
-    
+    // gives user their id
+    if ($errors == 0) {
+        $internName = $first . "" . $last;
+        echo "<p>Thank you, $internName. ";
+        echo "Your new intern ID is <strong>" . $internID . "</strong></p>\n";
+    }
+    // closes database
+    if ($DBConnect) {
+        // if there is no errors then the database will disconnect.
+        echo "<p>Closing database \"$DBName\" connection.</p>\n";
+        mysqli_close($DBConnect);
+    }
+    // this indicates to correct their errors
     if ($errors > 0) {
          echo "Please use your browser's BACK button to return to the form and fix the errors indicated.";
      }

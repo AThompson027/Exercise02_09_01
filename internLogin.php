@@ -43,7 +43,7 @@
         </p>
     </form>
     <h3>Returning Intern Login</h3>
-    <form action="verifyLogin.php" method="post">
+    <form action="VerifyLogin.php" method="post">
         <p>
             Enter your email address:
             <input type="text" name="email">
