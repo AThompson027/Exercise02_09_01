@@ -44,14 +44,17 @@
             } 
         }
     }
+    // This selects the ID from the table
     $TableName = "interns";
     if ($errors == 0) {
         $SQLstring = "SELECT * FROM $TableName" . " WHERE internID='$internID'";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
+        // if there is no result then there will be an error
         if (!$queryResult) {
             ++$errors;
             echo "<p>Unable to execute the query, error code: " . mysqli_errno($DBConnect) . ": " . mysqli_error($DBConnect) . "</p>\n";
         } 
+        // this indicated that the ID might be incorrect
         else {
         if (mysqli_num_rows($queryResult) == 0) {
             ++$errors;
@@ -59,18 +62,71 @@
         }
     }
     }
+    // this displays the intern name from the table
     if ($errors == 0) {
+        // explodes row into associative array format
         $row = mysqli_fetch_assoc($queryResult);
         $internName = $row['first'] . " " . $row['last'];  
-    }
-    if ($DBConnect) {
-        echo "<p>Closing database \"$DBName\" connection.</p>\n";
-        mysqli_close($DBConnect);
     }
     else {
         $internName = "";
     }
     echo "\$internName: $internName";
+    $TableName = "assigned_opportunities";
+    
+    if ($errors == 0) {
+    //counts the ID from the table
+    $SQLstring = "SELECT COUNT(opportunityID)" . " FROM $TableName" . " WHERE internID='$internID'" . " AND dateApproved IS NOT NULL";
+    $queryResult = mysqli_query($DBConnect, $SQLstring);
+        if (mysqli_num_rows($queryResult) > 0) {
+         // explodes row into array format
+        $row = mysqli_fetch_row($queryResult);
+        $approvedOpportunities = $row[0];
+        mysqli_free_result($queryResult);
+    }
+        //Selecting the opportunity id from the table for the user
+    $selectedOpportunities = array();
+        $SQLstring = "SELECT opportunityID FROM $TableName" . " WHERE internID='$internID'";
+        $queryResult = mysqli_query($DBConnect, $SQLstring);
+        if (mysqli_num_rows($queryResult) > 0) {
+            // this gets the row  of selected opportunities in the table
+            while (($row = mysqli_fetch_row($queryResult)) != false) {
+                $selectedOpportunities[] = $row[0]; 
+            }
+            mysqli_free_result($queryResult);
+        }
+        $assignedOpportunities = array();
+        $SQLstring = "SELECT opportunityID FROM $TableName" . " WHERE dateApproved IS NOT NULL";
+        $queryResult = mysqli_query($DBConnect, $SQLstring);
+    if (mysqli_num_rows($queryResult) > 0) {
+            // this gets the row  of selected opportunities in the table
+            while (($row = mysqli_fetch_row($queryResult)) != false) {
+                $assignedOpportunities[] = $row[0]; 
+            }
+            mysqli_free_result($queryResult);
+        }
+    $TableName = "opportunities";
+    $opportunities = array();
+    $SQLstring = "SELECT opportunityID, company, city," . " startDate, endDate, position, description" .
+        " FROM $TableName";
+    $queryResult = mysqli_query($DBConnect , $SQLstring);
+        if (mysqli_num_rows($queryResult) > 0) {
+            // this gets the row  of selected opportunities in the table
+            while (($row = mysqli_fetch_assoc($queryResult)) != false) {
+                $opportunities[] = $row; 
+            }
+            mysqli_free_result($queryResult);
+        } 
+    }
+        // closes database
+    if ($DBConnect) {
+        echo "<p>Closing database \"$DBName\" connection.</p>\n";
+            mysqli_close($DBConnect);
+    }
+    // makes a log out option and a border(line)
+    echo "<table border='1' width='100%'>\n";
+    echo "</table>\n";
+    echo "<p><a href='internLogin.php'>Log Out</a></p>\n";
     ?>
 </body>
 </html>
