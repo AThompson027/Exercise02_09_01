@@ -13,6 +13,7 @@
     <?php
     // the request let's anyone no matter what they usedto get to this file to get and internID
     if (isset($_REQUEST['internID'])) {
+        // request can substitute for $_GET or $_POST to get whatever is in each
         $internID = $_REQUEST['internID'];
     } else {
         $internID = -1;
@@ -125,6 +126,43 @@
     }
     // makes a log out option and a border(line)
     echo "<table border='1' width='100%'>\n";
+    echo "<tr>\n";
+    echo "<th style='background-color: cyan'>Company</th>\n";
+    echo "<th style='background-color: cyan'>City</th>\n";
+    echo "<th style='background-color: cyan'>State</th>\n";
+    echo "<th style='background-color: cyan'>End Date</th>\n";
+    echo "<th style='background-color: cyan'>Position</th>\n";
+    echo "<th style='background-color: cyan'>Description</th>\n";
+    echo "<th style='background-color: cyan'>Status</th>\n";
+    echo "</tr>\n";
+    // this shows the content for the table
+    foreach ($opportunities as $opportunity) {
+        // if it is not in the assigned_opportunities array then it will create a row
+        if (!in_array($opportunity['opportunityID'], $assignedOpportunities)) {
+            echo "<tr>\n";
+            echo "<td>" . htmlentities($opportunity['company']) . "</td>\n";
+            echo "<td>" . htmlentities($opportunity['city']) . "</td>\n";
+            echo "<td>" . htmlentities($opportunity['startDate']) . "</td>\n";
+            echo "<td>" . htmlentities($opportunity['endDate']) . "</td>\n";
+            echo "<td>" . htmlentities($opportunity['position']) . "</td>\n";
+            echo "<td>" . htmlentities($opportunity['description']) . "</td>\n";
+            echo "<td>\n";
+            // if selected_opportunities is in an array then it will display an echo
+            if (in_array($opportunity['opportunityID'], $selectedOpportunities)) {
+                echo "Selected";
+            }
+            // if the intern is appoved for an opportunity then it will display an echo
+            else if($approvedOpportunities > 0) {
+                echo "Open";
+            }
+            // makes a hyperlink for the avaliable internships in the "status" column
+            else {
+                echo "<a href='RequestOpportunity.php?" . "internID=$internID&" . "opportunityID=" . $opportunity['opportunityID'] . "'>Avaliable</a>\n";
+            }
+            echo "</td>\n";
+            echo "</tr>\n";
+        }
+    }
     echo "</table>\n";
     echo "<p><a href='internLogin.php'>Log Out</a></p>\n";
     ?>
