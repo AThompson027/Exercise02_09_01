@@ -157,7 +157,7 @@
             }
             // makes a hyperlink for the avaliable internships in the "status" column
             else {
-                echo "<a href='RequestOpportunity.php?" . "internID=$internID&" . "opportunityID=" . $opportunity['opportunityID'] . "'>Avaliable</a>\n";
+                echo "<a href='RequestOpportunity.php?" . "internID=$internID&" . "opportunityID=" . $opportunity['opportunityID'] . "'>Available</a>\n";
             }
             echo "</td>\n";
             echo "</tr>\n";
