@@ -1,3 +1,8 @@
+<?php
+session_start();
+
+echo "Session id: " . session_id() . "<br>\n";
+?>
 <!DOCTYPE html>
 <html lang="">
 <head>
@@ -12,15 +17,19 @@
     <h2>Available Opportunities</h2>
     <?php
     // the request let's anyone no matter what they usedto get to this file to get and internID
-    if (isset($_REQUEST['internID'])) {
-        // request can substitute for $_GET or $_POST to get whatever is in each
-        $internID = $_REQUEST['internID'];
+//    if (isset($_REQUEST['internID'])) {
+//        // request can substitute for $_GET or $_POST to get whatever is in each
+//        $internID = $_REQUEST['internID'];
+//    } else {
+//        $internID = -1;
+//    }
+//    //debug
+//    echo "\$internID: $internID\n";
+    if (isset($_COOKIE['LastRequestDate'])) {
+        $lastRequestDate = $_COOKIE['LastRequestDate'];
     } else {
-        $internID = -1;
+        $lastRequestDate = "";
     }
-    //debug
-    echo "\$internID: $internID\n";
-    
     $errors = 0;
     $hostname = "localhost";
     $username = "adminer";
@@ -48,7 +57,7 @@
     // This selects the ID from the table
     $TableName = "interns";
     if ($errors == 0) {
-        $SQLstring = "SELECT * FROM $TableName" . " WHERE internID='$internID'";
+        $SQLstring = "SELECT * FROM $TableName" . " WHERE internID='" . $_SESSION['internID'] . "'";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         // if there is no result then there will be an error
         if (!$queryResult) {
@@ -77,7 +86,7 @@
     
     if ($errors == 0) {
     //counts the ID from the table
-    $SQLstring = "SELECT COUNT(opportunityID)" . " FROM $TableName" . " WHERE internID='$internID'" . " AND dateApproved IS NOT NULL";
+    $SQLstring = "SELECT COUNT(opportunityID)" . " FROM $TableName" . " WHERE internID='" . $_SESSION['internID'] . "'" . " AND dateApproved IS NOT NULL";
     $queryResult = mysqli_query($DBConnect, $SQLstring);
         if (mysqli_num_rows($queryResult) > 0) {
          // explodes row into array format
@@ -87,7 +96,7 @@
     }
         //Selecting the opportunity id from the table for the user
     $selectedOpportunities = array();
-        $SQLstring = "SELECT opportunityID FROM $TableName" . " WHERE internID='$internID'";
+        $SQLstring = "SELECT opportunityID FROM $TableName" . " WHERE internID='" . $_SESSION['internID'] . "'";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         if (mysqli_num_rows($queryResult) > 0) {
             // this gets the row  of selected opportunities in the table
@@ -124,6 +133,9 @@
         echo "<p>Closing database \"$DBName\" connection.</p>\n";
             mysqli_close($DBConnect);
     }
+    if (!empty($lastRequestDate)) {
+        echo "<p>You last requested an internship" . " opportunity on $lastRequestDate.</p>\n";
+    }
     // makes a log out option and a border(line)
     echo "<table border='1' width='100%'>\n";
     echo "<tr>\n";
@@ -157,7 +169,7 @@
             }
             // makes a hyperlink for the avaliable internships in the "status" column
             else {
-                echo "<a href='RequestOpportunity.php?" . "internID=$internID&" . "opportunityID=" . $opportunity['opportunityID'] . "'>Available</a>\n";
+                echo "<a href='RequestOpportunity.php?" . "PHPSESSID=" . session_id() . "&opportunityID=" . $opportunity['opportunityID'] . "'>Available</a>\n";
             }
             echo "</td>\n";
             echo "</tr>\n";

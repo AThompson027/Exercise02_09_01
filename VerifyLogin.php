@@ -1,3 +1,10 @@
+
+<?php 
+//start of session
+session_start();
+echo "Sessionid: " . session_id() . "<br>\n";
+?>
+
 <!DOCTYPE html>
 <html lang="">
 <head>
@@ -49,7 +56,8 @@
         // this tells it to get a row from the query result (internID row and first/last name row)
         else {
             $row = mysqli_fetch_assoc($queryResult);
-            $internID = $row['internID'];
+//            $internID = $row['internID'];
+            $_SESSION['internID'] = $row['internID'];
             $internName = $row['first'] . " " . $row['last'];
             //Fetch rows from a result-set, then free the memory associated with the result
             mysqli_free_result($queryResult);
@@ -65,7 +73,8 @@
 //        echo "<input type ='hidden' name='internID' value='$internID'>\n";
 //        echo "<input type='submit' name='submit' value='View Available Opportunities'>\n";
 //        echo "</form>\n";
-        echo "<p><a href='AvailableOpportunities.php?" . "internID=$internID'>Available Opportunities" . "</a></p>\n";
+//        echo "<p><a href='AvailableOpportunities.php?" . "internID=$internID'>Available Opportunities" . "</a></p>\n";
+        echo "<p><a href='AvailableOpportunities.php?" . "PHPSESSID=" . session_id() . "'>Available Opportunities" . "</a></p>\n";
     }
     // indicates to go back to fix errors
     if ($errors > 0) {

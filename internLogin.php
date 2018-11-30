@@ -1,3 +1,9 @@
+<?php 
+//start of the session
+session_start();
+$_SESSION = array();
+session_destroy();
+?>
 <!DOCTYPE html>
 <html lang="">
 
@@ -16,7 +22,8 @@
         second form to login.</p>
 
     <h3>New Intern Registration</h3>
-    <form action="RegisterIntern.php" method="post">
+<!--    Shows the session id in the url-->
+    <form action="RegisterIntern.php?PHPSESSID=<?php echo session_id();?>" method="post">
         <p>
             Enter your name: First:
             <input type="text" name="first">
@@ -43,7 +50,7 @@
         </p>
     </form>
     <h3>Returning Intern Login</h3>
-    <form action="VerifyLogin.php" method="post">
+    <form action="VerifyLogin.php?PHPSESSID=<?php echo session_id();?>" method="post">
         <p>
             Enter your email address:
             <input type="text" name="email">
