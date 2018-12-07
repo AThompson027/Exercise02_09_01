@@ -4,7 +4,7 @@ session_start();
 $body = "";
 $errors = 0;
 //$internID = 0;
-// we use a GET because e used a hyperlink (URL) to get to this file
+// we use a GET because we used a hyperlink (URL) to get to this file
 //if (isset($_GET['internID'])) {
 //    $internID = $_GET['internID'];
 //} 

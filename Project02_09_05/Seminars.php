@@ -14,6 +14,7 @@ echo "Session id: " . session_id() . "<br>\n";
 
 <body>
     <h2>Available Seminars</h2>
+        <p>Choose a seminar you would like to attend!</p>
     <?php
     if (isset($_COOKIE['LastRequestDate'])) {
         $lastRequestDate = $_COOKIE['LastRequestDate'];
@@ -62,17 +63,17 @@ echo "Session id: " . session_id() . "<br>\n";
         }
     }
     }
-    // this displays the intern name from the table
+    // this displays the user name from the table
     if ($errors == 0) {
         // explodes row into associative array format
         $row = mysqli_fetch_assoc($queryResult);
-        $DisplayName = $row['first'] . " " . $row['last'];  
+        $fullName = $row['first'] . " " . $row['last'];  
     }
     else {
-        $DisplayName = "";
+        $fullName = "";
     }
-    echo "\$DisplayName: $DisplayName";
-    $TableName = "seminars";
+    echo "\$fullName: $fullName";
+    $TableName = "assigned_seminars";
     
     if ($errors == 0) {
     //counts the ID from the table
@@ -84,34 +85,34 @@ echo "Session id: " . session_id() . "<br>\n";
         $approvedSeminars = $row[0];
         mysqli_free_result($queryResult);
     }
-        //Selecting the opportunity id from the table for the user
-    $selectedSeminars = array();
-        $SQLstring = "SELECT opportunityID FROM $TableName" . " WHERE internID='" . $_SESSION['internID'] . "'";
+        //Selecting the seminar id from the table for the user
+        $selectedSeminars = array();
+        $SQLstring = "SELECT seminarID FROM $TableName" . " WHERE userID='" . $_SESSION['userID'] . "'";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         if (mysqli_num_rows($queryResult) > 0) {
-            // this gets the row  of selected opportunities in the table
+            // this gets the row of selected seminars in the table
             while (($row = mysqli_fetch_row($queryResult)) != false) {
                 $selectedSeminars[] = $row[0]; 
             }
             mysqli_free_result($queryResult);
         }
         $assignedSeminars = array();
-        $SQLstring = "SELECT opportunityID FROM $TableName" . " WHERE dateApproved IS NOT NULL";
+        $SQLstring = "SELECT seminarID FROM $TableName" . " WHERE dateApproved IS NOT NULL";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
     if (mysqli_num_rows($queryResult) > 0) {
-            // this gets the row  of selected opportunities in the table
+            // this gets the row  of selected seminars in the table
             while (($row = mysqli_fetch_row($queryResult)) != false) {
                 $assignedSeminars[] = $row[0]; 
             }
             mysqli_free_result($queryResult);
         }
-    $TableName = "opportunities";
+    $TableName = "seminars";
     $Seminars = array();
-    $SQLstring = "SELECT opportunityID, company, city," . " startDate, endDate, position, description" .
+    $SQLstring = "SELECT seminarID, seminar, city," . " startDate, endDate, topic, description" .
         " FROM $TableName";
     $queryResult = mysqli_query($DBConnect , $SQLstring);
         if (mysqli_num_rows($queryResult) > 0) {
-            // this gets the row  of selected opportunities in the table
+            // this gets the row  of selected seminars in the table
             while (($row = mysqli_fetch_assoc($queryResult)) != false) {
                 $Seminars[] = $row; 
             }
@@ -124,40 +125,39 @@ echo "Session id: " . session_id() . "<br>\n";
             mysqli_close($DBConnect);
     }
     if (!empty($lastRequestDate)) {
-        echo "<p>You last requested to attend a seminar" . " on $lastRequestDate.</p>\n";
+        echo "<p>You last requested a seminar" . " on $lastRequestDate.</p>\n";
     }
-    // makes a log out option and a border(line)
     echo "<table border='1' width='100%'>\n";
     echo "<tr>\n";
-    echo "<th style='background-color: cyan'>Company</th>\n";
-    echo "<th style='background-color: cyan'>City</th>\n";
-    echo "<th style='background-color: cyan'>State</th>\n";
-    echo "<th style='background-color: cyan'>End Date</th>\n";
-    echo "<th style='background-color: cyan'>Position</th>\n";
-    echo "<th style='background-color: cyan'>Description</th>\n";
-    echo "<th style='background-color: cyan'>Status</th>\n";
+    echo "<th style='background-color: lightgray'>Seminar</th>\n";
+    echo "<th style='background-color: lightgray'>City</th>\n";
+    echo "<th style='background-color: lightgray'>Start Date</th>\n";
+    echo "<th style='background-color: lightgray'>End Date</th>\n";
+    echo "<th style='background-color: lightgray'>Topic</th>\n";
+    echo "<th style='background-color: lightgray'>Description</th>\n";
+    echo "<th style='background-color: lightgray'>Status</th>\n";
     echo "</tr>\n";
     // this shows the content for the table
     foreach ($Seminars as $Seminar) {
-        // if it is not in the assigned_opportunities array then it will create a row
-        if (!in_array($opportunity['seminarID'], $assignedSeminars)) {
+        // if it is not in the assignedSeminars array then it will create a row
+        if (!in_array($Seminar['seminarID'], $assignedSeminars)) {
             echo "<tr>\n";
-            echo "<td>" . htmlentities($Seminar['company']) . "</td>\n";
+            echo "<td>" . htmlentities($Seminar['seminar']) . "</td>\n";
             echo "<td>" . htmlentities($Seminar['city']) . "</td>\n";
             echo "<td>" . htmlentities($Seminar['startDate']) . "</td>\n";
             echo "<td>" . htmlentities($Seminar['endDate']) . "</td>\n";
-            echo "<td>" . htmlentities($Seminar['position']) . "</td>\n";
+            echo "<td>" . htmlentities($Seminar['topic']) . "</td>\n";
             echo "<td>" . htmlentities($Seminar['description']) . "</td>\n";
             echo "<td>\n";
-            // if selected_opportunities is in an array then it will display an echo
+            // if selectedSeminars is in an array then it will display an echo
             if (in_array($Seminar['seminarID'], $selectedSeminars)) {
                 echo "Selected";
             }
-            // if the intern is appoved for an opportunity then it will display an echo
+//             if the user is approved for a seminar then it will display an echo
             else if($approvedSeminars > 0) {
                 echo "Open";
             }
-            // makes a hyperlink for the avaliable internships in the "status" column
+            // makes a hyperlink for the avaliable seminars in the "status" column
             else {
                 echo "<a href='DisplayInfo.php?" . "PHPSESSID=" . session_id() . "&seminarID=" . $Seminar['seminarID'] . "'>Available</a>\n";
             }

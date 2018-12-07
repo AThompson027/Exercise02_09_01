@@ -7,12 +7,14 @@
 </head>
 
 <body>
+<!--   form for the user information input-->
     <form action="UserForm.php?PHPSESSID=<?php echo session_id();?>" method="post">
         <p>
             Enter your name: First:
             <input type="text" name="first">
             Last:
             <input type="text" name="last">
+            <br>
             Enter your company name:
             <input type="text" name="company">
         </p>
