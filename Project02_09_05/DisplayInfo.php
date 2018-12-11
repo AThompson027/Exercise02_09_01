@@ -9,8 +9,9 @@ if (!isset($_SESSION['userID'])) {
 }
 
 if ($errors == 0) {
-if (isset($_GET['seminarID']))
+if (isset($_GET['seminarID'])) {
     $seminarID = $_GET['seminarID'];
+    }
 }
 // indicates that there was no seminar chosen
 else {
@@ -43,35 +44,44 @@ else {
     }
 // displays the date on the page
 $displayDate = date("l, F j, Y, g:i A");
-$body .= "\$displayDate: $displayDate<br>";
 $dbDate = date("Y-m-d H:i:s");
-$body .= "\$dbDate: $dbDate<br>";
+
+$SQLstring = "SELECT * FROM users" . " WHERE userID='" . $_SESSION['userID'] . "'";
+    $queryResult = mysqli_query($DBConnect, $SQLstring);
+
 // inserts new columns for the table
 if ($errors == 0) {
     $tableName = "assigned_seminars";
     $SQLstring = "INSERT INTO $tableName" . " (seminarID, userID, dateSelected)" . " VALUES($seminarID, " . $_SESSION['userID'] . ", '$dbDate')";
-    $queryResult = mysqli_query($DBConnect, $SQLstring);
 }
+
+if ($errors == 0) {
+        // explodes row into associative array format
+        $row = mysqli_fetch_assoc($queryResult);
+        $fullName = $row['first'] . " " . $row['last'];
+        $company = $row['company'];
+        $email = $row['email'];
+    }
+    else {
+        $fullName = "";
+        $company = "";
+        $email = "";
+    }
+
+
 if (!$queryResult) {
     ++$errors;
     $body .= "<p>Unable to execute the query, " . "error code: " . mysqli_errno($DBConnect) . ": " . mysqli_error($DBConnect) . "</p>\n";
 }
 // shows the date of entry of results
 else {
-    $body .= "<p>You results for seminar # " .  " $seminarID have been entered on" . " $displayDate.</p>\n";
+    $body .= "<p>Your results for seminar # " .  " $seminarID have been entered on" . " $displayDate.</p>\n";
 }
 // closes database
     if ($DBConnect) {
         $body .= "<p>Closing database \"$DBName\" connection.</p>\n";
         mysqli_close($DBConnect);
     }
-if ($_SESSION['userID'] > 0) {
-    $body .= "<p>Return to the " . "<a href='Seminars.php?" . "PHPSESSID=" . session_id() . "'>Available Seminars" . "</a> page.</p>\n";
-}
-// indicates that you must login to website in order to be on the seminar page
-else {
-$body .= "<p>Please " . "<a> href='index.php'>" . "Register" . "</a> to use this page.</p>\n";
-}
 // sets the cookie for the request date
 if ($errors == 0) {
     setcookie("LastRequestDate", urldecode($displayDate), time()+60*60*24*7);
@@ -91,7 +101,17 @@ if ($errors == 0) {
     <?php
     echo $body;
     $errors = 0;
-   
+    echo "<form action='Confirmation.php?PHPSESSID=<?php echo session_id();?>' method='post'>";
+        echo "<h2>Is this information correct?</h2>";
+        echo "Name: $fullName<br>";
+        echo "Company: $company<br>";
+        echo "Email: $email<br>";
+    echo "<input type='submit' name='yes' value='Yes'>";
+    echo "</form>";
+    
+    echo "<form action='Edit.php?PHPSESSID=<?php echo session_id();?>' method='post'>";
+    echo "<input type='submit' name='edit' value='Edit'>";
+    echo "</form>";
     ?>
 </body>
 </html>
