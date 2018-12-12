@@ -30,7 +30,7 @@ if ($errors == 0) {
     $TableName = "users";
     // counts how many rows are in the email field in the table
     if ($errors == 0) {
-        $SQLstring = "UPDATE users SET first = '$first2', last = '$last2', company = '$company2', email = '$email2'";
+        $SQLstring = "UPDATE users" . "SET first = $first2, last = $last2, company = $company2, email = $email2" . " WHERE userID='" . $_SESSION['userID'] . "'";
         $queryResult = mysqli_query($DBConnect, $SQLstring);
         // if the user inputs an email that is already in the server then it will provide an error indicating so
     }
@@ -39,13 +39,12 @@ if ($errors == 0) {
         $last2 = stripslashes($_POST['last2']);
         $company2 = stripslashes($_POST['company2']);
         $email2 = $_POST['email2'];
+        $SQLstring = "INSERT INTO $TableName" . " (first, last, email, company)" . " VALUES('$first2', '$last2', '$email2', '$company2')";
+        $queryResult = mysqli_query($DBConnect, $SQLstring);
         // if there are no results to making the table then it will give an error
         if (!$queryResult) {
             ++$errors;
             $body .= "<p>Unable to register information error code: " . mysqli_error($DBConnect) . "</p>\n";
-        }
-        else {
-            $_SESSION['userID'] = mysqli_insert_id($DBConnect);
         }
     }
 
@@ -82,7 +81,7 @@ if ($DBConnect) {
         <p>
             <br>
             <input type="reset" name="reset" value="Reset Registration Form">
-            <input type="submit" name="register" value="Register">
+            <input type="submit" name="Enter" value="Enter">
         </p>
     </form>
 </body>

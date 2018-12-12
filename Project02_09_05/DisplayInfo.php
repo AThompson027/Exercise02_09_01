@@ -68,6 +68,13 @@ if ($errors == 0) {
         $email = "";
     }
 
+if (isset($_POST['Enter'])) {
+    $row = mysqli_fetch_assoc($queryResult);
+    $fullName = $row['first2'] . " " . $row['last2'];
+    $company = $row['company2'];
+    $email = $row['email2'];
+}
+
 
 if (!$queryResult) {
     ++$errors;
