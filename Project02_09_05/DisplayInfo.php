@@ -11,6 +11,7 @@ if (!isset($_SESSION['userID'])) {
 if ($errors == 0) {
 if (isset($_GET['seminarID'])) {
     $seminarID = $_GET['seminarID'];
+    echo"$seminarID";
     }
 }
 // indicates that there was no seminar chosen
@@ -68,12 +69,12 @@ if ($errors == 0) {
         $email = "";
     }
 
-if (isset($_POST['Enter'])) {
-    $row = mysqli_fetch_assoc($queryResult);
-    $fullName = $row['first2'] . " " . $row['last2'];
-    $company = $row['company2'];
-    $email = $row['email2'];
-}
+//if (isset($_POST['Enter'])) {
+//    $row = mysqli_fetch_assoc($queryResult);
+//    $fullName = $row['first2'] . " " . $row['last2'];
+//    $company = $row['company2'];
+//    $email = $row['email2'];
+//}
 
 
 if (!$queryResult) {
@@ -116,7 +117,7 @@ if ($errors == 0) {
     echo "<input type='submit' name='yes' value='Yes'>";
     echo "</form>";
     
-    echo "<form action='Edit.php?PHPSESSID=<?php echo session_id();?>' method='post'>";
+    echo "<form action='index2.php?PHPSESSID=<?php echo session_id();?>' method='post'>";
     echo "<input type='submit' name='edit' value='Edit'>";
     echo "</form>";
     ?>
